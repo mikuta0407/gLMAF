@@ -207,6 +207,6 @@ eml処理関数内で`$mailtext`変数にメール本文が格納されていま
 	http://www.aiwake.co.jp/modules/bulletin/index.php?page=article&storyid=4
 
 ## ライセンスについて
-使用しているライブラリは修正BSDライセンスですが、それ以外のメインプログラムについては「悪用、犯罪への利用等を行わない限り、何しようが自由」とします。
+This software is released under the MIT License, see LICENSE.txt.
 
-改変・再配布等を行う場合は、できれば本リポジトリ ( https://github.com/mikuta0407/gLMAF )へのリンク等を書いておいてくれると嬉しいです。
+MITライセンスです。LICENSE.txtをご確認ください。(lib/PEAR.php, lib/mimeDecode.phpは修正BSDライセンスです)

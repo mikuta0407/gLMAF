@@ -9,6 +9,15 @@ IMAPに接続し、最新メールから添付ファイルを保存するPHPス�
 Manual: https://hackmd.io/@mikuta0407/glmaf (または./README.md)
 
 参考プログラム: http://www.aiwake.co.jp/modules/bulletin/index.php?page=article&storyid=4
+
+
+
+Copyright (c) 2021 mikuta0407
+
+This software is released under the MIT License.
+http://opensource.org/licenses/mit-license.php
+
+MITライセンスです。LICENSE.txtをご確認ください。(lib/PEAR.php, lib/mimeDecode.phpは修正BSDライセンスです)
 */
 
 // MIMEのデコードライブラリをrequire_once
