@@ -33,28 +33,30 @@ $imapserver = "Imaps://".$envarray['server'].":".$envarray['port']; // IMAPサ�
 if (isset($argv[1])){
     echo "!!!Debug Mode!!!\n";
     $debug = true; // 通常はfalse
-    $mailnum = $argv[1]; // CLIからの実行時、引数としてメール番号を指定することでデバッグ時に任意のメールを取得できる
+    $mailnum = $argv[1]; // CLIからの実行時、引数としてメールUIDを指定することでデバッグ時に任意のメールを取得できる
 } else {
     $debug = false;
 }
 
-// メール全件数を取得 ($mailnumへ)
+// 最新メールのUIDを取得 ($mailnumへ)
 if(!$debug){
     do {
-        $mailnum = shell_exec("curl -sS -u $imapid:$imappasswd '$imapserver' -X 'EXAMINE INBOX' | grep EXISTS | sed -e 's/\* //' | sed -e 's/EXISTS.*//' | sed -e 's/ //g '");
+        $mailnum = shell_exec("curl -sS -u $imapid:$imappasswd '$imapserver/INBOX' -X 'SEARCH ALL' | sed 's/ /\\n/g' | tail -n 1");
         $mailnum = str_replace("\n", '', $mailnum);
-    } while (!$mailnum);
+    } while (!$mailnum);    
 }
 
-// 前回の全件数を確認 ($lastmailnumへ)
+// 前回の最新メールUIDを確認 ($lastmailnumへ)
 $lastmailnum = file_get_contents(__DIR__. "/var/lastmailnum");
 
 // デバッグ用強制処理
 if ($debug){
     echo "前回: $lastmailnum\n";
     echo "今回: $mailnum\n";
-    // eml取得
-    $eml = shell_exec("curl -sS -u $imapid:$imappasswd $imapserver/INBOX\;UID=$mailnum | nkf");
+    do {
+        // eml取得
+        $eml = shell_exec("curl -sS -u $imapid:$imappasswd $imapserver/INBOX\;UID=$mailnum | nkf");
+    } while (!$eml);
     // eml保存
     file_put_contents(__DIR__."/eml/$mailnum.eml", $eml);
     // eml処理
@@ -63,7 +65,7 @@ if ($debug){
 
 // 前回処理時より後に最新メールが存在した場合 (ここのifはデバッグ有効時は通らない)
 if ($mailnum > $lastmailnum && !$debug){
-    // 今回処理したメール番号(現状最新)を保存
+    // 今回処理したメールUID(現状最新)を保存
     file_put_contents(__DIR__."/var/lastmailnum", $mailnum);
     // 未処理最新分すべて
     for ($i = $lastmailnum + 1; $i <= $mailnum; $i++){
@@ -74,7 +76,7 @@ if ($mailnum > $lastmailnum && !$debug){
     }    
 }
 
-// eml処理関数 (引数はemlの内容および処理するメール番号(CLIへの出力用))
+// eml処理関数 (引数はemlの内容および処理するメールUID(CLIへの出力用))
 function extracteml($eml, $i){
     global $debug;
 
